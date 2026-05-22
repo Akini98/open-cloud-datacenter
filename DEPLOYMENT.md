@@ -23,7 +23,7 @@ guide. This file is the picture in between — what shape everything takes after
 │  ┌──────────────────────────────────────────────────────────────────────┐  │
 │  │  namespace: dbaas-system                                              │  │
 │  │                                                                       │  │
-│  │   deploy/dbaas-controller-manager   image wso2vick/ocd-dbaas:v0.2.4   │  │
+│  │   deploy/dbaas-controller-manager   image <registry>/dbaas:<tag>      │  │
 │  │   ┌─────────────────────────────────────────────────────────────┐    │  │
 │  │   │  controller-runtime manager                                  │    │  │
 │  │   │   • reconciler      ─ watches DBInstance, writes K8s objects │    │  │
@@ -136,7 +136,7 @@ operator has to satisfy:
 | A `VirtualMachineImage` for the OS | The VM's OS DataVolume is cloned from it via the image-managed StorageClass. | Created in Harvester UI under **Images** (upload or URL). Reference it from `spec.osImage` by either the CR name (`<ns>/<name>`) or the displayName. We downloaded the stock Ubuntu 24.04 noble cloudimg. |
 | A static IP on the VLAN (only if no DHCP) | The reconciler doesn't run an IPAM; it just hands what's in `spec.staticNetwork` to cloud-init. | Pick a free IP, gateway, DNS resolvers; set `spec.staticNetwork`. Omit if the VLAN has a working DHCP server. |
 | `kubectl` access to the cluster | Standard kubebuilder install / deploy targets use the active kubeconfig. | Harvester UI → **Support → Download KubeConfig**. |
-| A registry the nodes can pull from | The controller image. | Public registry works (we used Docker Hub `wso2vick/ocd-dbaas`); private registries need imagePullSecrets in the manager Deployment. |
+| A registry the nodes can pull from | The controller image. | Any public registry the nodes can reach works (e.g. a Docker Hub or GHCR repo you control); private registries need imagePullSecrets in the manager Deployment. |
 
 ## Two non-obvious gotchas this deployment hit
 

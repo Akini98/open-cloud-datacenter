@@ -11,6 +11,12 @@ each command actually does.
 - A Multus `NetworkAttachmentDefinition` representing the VLAN the database
   VM should live on — typically the same VLAN as your Rancher/RKE2
   workloads. Note the `namespace/name`; you will set it as `spec.networkRef`.
+  If that VLAN assigns the VM an address (Harvester VM IPAM or a DHCP
+  server on the VLAN), you do **not** need `spec.staticNetwork`; set it
+  only for VLANs that can't hand out an address. The controller also
+  attaches a second, pod-network NIC to every VM automatically — used for
+  its readiness checks and the VM's first-boot package egress — which you
+  never configure.
 - A `kubectl` context pointed at that cluster:
   ```sh
   kubectl cluster-info
@@ -363,7 +369,7 @@ Common failure modes:
 | --- | --- |
 | `status.message: "NetworkRefMissing"` | `spec.networkRef` is empty — set it to the `namespace/name` of an existing Multus NAD. |
 | Phase stuck on `NetworkProvisioned`/`StorageProvisioned` long enough to notice | `kubectl describe dv pg-<name>-data` — CDI usually surfaces the cause. |
-| Phase stuck on `WaitingForCloudInit` | VMI exists but cloud-init hasn't reported the VLAN IP. Console into the VM and tail `/var/log/cloud-init-output.log`. The VLAN must reach upstream package mirrors. |
+| Phase stuck on `WaitingForCloudInit` | The VM booted but the controller can't yet confirm PostgreSQL is accepting connections — it dials the VM's mgmt-net pod IP on the DB port. `virtctl console pg-<name>` and tail `/var/log/cloud-init-output.log`; usually cloud-init's `apt install` or the bootstrap script is still running or has failed. The data-net IP must also be assigned before the endpoint is published. |
 | Phase `failed`, `status.message: "InvalidClass: …"` | `spec.dbInstanceClass` is not in the `InstanceClasses` map in `api/v1alpha1/dbinstance_types.go`. |
 | `kubectl delete dbi` hangs | Check `metadata.finalizers`. `TeardownAll` runs deletes in parallel and ignores errors; if it can't make progress, the controller logs will show why. |
 | `kubectl explain dbi.spec` returns nothing | CRD didn't install or wasn't regenerated — re-run `make manifests install`. |
