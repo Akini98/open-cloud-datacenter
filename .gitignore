@@ -1,35 +1,30 @@
-# Compiled class file
-*.class
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/*
+Dockerfile.cross
 
-# Log file
-*.log
+# Test binary, built with `go test -c`
+*.test
 
-# BlueJ files
-*.ctxt
+# Output of the go coverage tool, specifically when used with LiteIDE
+*.out
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
+# Go workspace file
+go.work
 
-# Package Files #
-*.jar
-*.war
-*.nar
-*.ear
-*.zip
-*.tar.gz
-*.rar
+# Kubernetes Generated files - skip generated files, except for vendored files
+!vendor/**/zz_generated.*
 
-# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
-hs_err_pid*
-replay_pid*
+# editor and IDE paraphernalia
+.idea
+.vscode
+*.swp
+*.swo
+*~
 
-# Infrastructure Tools
-.terraform/
-.terraform.lock.hcl
-*.tfstate*
-*.tfvars
-.env
-
-# Claude Code
-.claude/
-CLAUDE.md
+# Kubeconfig might contain secrets
+*.kubeconfig
